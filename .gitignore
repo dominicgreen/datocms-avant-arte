@@ -1,2 +1,10 @@
+<<<<<<< HEAD
 node_modules
 .next
+=======
+.env
+.now
+.next
+node_modules/
+out/
+>>>>>>> parent of 2757ee6... Revert "Initial commit"
