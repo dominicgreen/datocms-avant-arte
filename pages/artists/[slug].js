@@ -22,7 +22,7 @@ export async function getStaticPaths() {
 export async function getStaticProps({ params, preview = false }) {
   const graphqlRequest = {
     query: `
-      query PostBySlug($slug: String) {
+      query ArtistBySlug($slug: String) {
        
         artist(filter: {slug: {eq: $slug}}) {
           id
