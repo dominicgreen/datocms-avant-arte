@@ -5,11 +5,10 @@ import Header from "../../components/header";
 import Layout from "../../components/layout";
 import MoreStories from "../../components/more-stories";
 import PostBody from "../../components/post-body";
-import PostHeader from "../../components/post-header";
+import ArtistHeader from "../../components/artist-header";
 import SectionSeparator from "../../components/section-separator";
 import { request } from "../../lib/datocms";
 import { metaTagsFragment, responsiveImageFragment } from "../../lib/fragments";
-
 export async function getStaticPaths() {
   const data = await request({ query: `{ allArtists{ slug } }` });
 
@@ -36,16 +35,23 @@ export async function getStaticProps({ params, preview = false }) {
           id
           excerptText
           hideArtist
+          ogImage: coverImage{
+            url(imgixParams: {fm: jpg, fit: crop, w: 2000, h: 1000 })
+          }
+          coverImage {
+            responsiveImage(imgixParams: {fm: jpg, fit: crop, w: 2000, h: 1000 }) {
+              ...responsiveImageFragment
+            }
+          }
           facts {
             text
           }
+          
           slides {
             id
             title
             textAboveTitle
-            image {
-              url
-            }
+            
           }
         }
 
@@ -67,7 +73,7 @@ export async function getStaticProps({ params, preview = false }) {
           }
         }
       }
-
+      
       ${responsiveImageFragment}
       ${metaTagsFragment}
     `,
@@ -75,6 +81,7 @@ export async function getStaticProps({ params, preview = false }) {
     variables: {
       slug: params.slug,
     },
+    
   };
 
   return {
@@ -101,17 +108,22 @@ export default function Artist({ subscription, preview }) {
 
   return (
     
+
     <Layout preview={preview}>
-      <Head></Head>
       <Container>
+      <ArtistHeader
+            
+            coverImage={artist.coverImage}
+            
+          />
         <h1>{artist.title}</h1>
         {artist.description}
         <ul>
         {artist.facts.map((facts) =>
-           <li>{facts.text}</li>
+           <li key={facts.text}>{facts.text}</li>
             )}
             </ul>
-        <img src={artist.slides[0].image.url}/>
+    
         <SectionSeparator />
         {morePosts.length > 0 && <MoreStories posts={morePosts} />}
       </Container>
