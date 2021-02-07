@@ -23,56 +23,13 @@ export async function getStaticProps({ params, preview = false }) {
   const graphqlRequest = {
     query: `
       query PostBySlug($slug: String) {
-        site: _site {
-          favicon: faviconMetaTags {
-            ...metaTagsFragment
-          }
-        }
-        post(filter: {slug: {eq: $slug}}) {
-          seo: _seoMetaTags {
-            ...metaTagsFragment
-          }
-          title
+       
+        artist(filter: {slug: {eq: $slug}}) {
+          id
           slug
-          content(markdown: true)
-          date
-          ogImage: coverImage{
-            url(imgixParams: {fm: jpg, fit: crop, w: 2000, h: 1000 })
-          }
-          coverImage {
-            responsiveImage(imgixParams: {fm: jpg, fit: crop, w: 2000, h: 1000 }) {
-              ...responsiveImageFragment
-            }
-          }
-          author {
-            name
-            picture {
-              url(imgixParams: {fm: jpg, fit: crop, w: 100, h: 100, sat: -100})
-            }
-          }
         }
 
-        morePosts: allPosts(orderBy: date_DESC, first: 2, filter: {slug: {neq: $slug}}) {
-          title
-          slug
-          excerpt
-          date
-          coverImage {
-            responsiveImage(imgixParams: {fm: jpg, fit: crop, w: 2000, h: 1000 }) {
-              ...responsiveImageFragment
-            }
-          }
-          author {
-            name
-            picture {
-              url(imgixParams: {fm: jpg, fit: crop, w: 100, h: 100, sat: -100})
-            }
-          }
-        }
       }
-
-      ${responsiveImageFragment}
-      ${metaTagsFragment}
     `,
     preview,
     variables: {
@@ -98,28 +55,14 @@ export async function getStaticProps({ params, preview = false }) {
 
 export default function Post({ subscription, preview }) {
   const {
-    data: { site, post, morePosts },
+    data: { site, artist },
   } = useQuerySubscription(subscription);
 
-  const metaTags = post.seo.concat(site.favicon);
 
   return (
     <Layout preview={preview}>
-      <Head>{renderMetaTags(metaTags)}</Head>
-      <Container>
-        <Header />
-        <article>
-          <PostHeader
-            title={post.title}
-            coverImage={post.coverImage}
-            date={post.date}
-            author={post.author}
-          />
-          <PostBody content={post.content} />
-        </article>
-        <SectionSeparator />
-        {morePosts.length > 0 && <MoreStories posts={morePosts} />}
-      </Container>
+      Artist
+      {artist.id}
     </Layout>
   );
 }
